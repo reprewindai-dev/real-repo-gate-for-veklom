@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  repo-gate:
+    build: .
+    container_name: veklom-repo-gate
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
