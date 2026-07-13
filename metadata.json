@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Remix: Veklom Sovereign",
+  "description": "Editorial Sovereign Hub governance interface",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
