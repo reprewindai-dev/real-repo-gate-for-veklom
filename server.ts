@@ -507,6 +507,24 @@ async function startServer() {
       }));
 
       run.ledger_hash = calculateCanonicalHash(jsonEvents);
+
+      // Forward to BYOS Backend if configured
+      const backendUrl = process.env.BYOS_API_URL || 'https://api.veklom.com';
+      if (backendUrl) {
+        fetch(`${backendUrl}/api/v1/repogate/seal`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            run_id: run.run_id,
+            agent_id: run.agent_id,
+            repo_url: run.repo_url,
+            risk_level: run.risk_level,
+            decision: run.decision || (containsAwaitingApproval ? 'ESCALATED' : 'APPROVED'),
+            ledger_hash: run.ledger_hash,
+            timestamp: new Date().toISOString()
+          })
+        }).catch(err => console.error('Failed to forward ledger seal to BYOS backend:', err));
+      }
     }
 
     runsDB.set(run_id, run);
@@ -592,6 +610,25 @@ async function startServer() {
     run.decision_note = note;
     run.decision_at = decisionRecord.created_at;
     run.ledger_hash = calculateCanonicalHash(jsonEvents);
+
+    // Forward to BYOS Backend if configured
+    const backendUrl = process.env.BYOS_API_URL || 'https://api.veklom.com';
+    if (backendUrl) {
+      fetch(`${backendUrl}/api/v1/repogate/seal`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          run_id: run.run_id,
+          agent_id: run.agent_id,
+          repo_url: run.repo_url,
+          risk_level: run.risk_level,
+          decision: run.decision,
+          decision_note: run.decision_note,
+          ledger_hash: run.ledger_hash,
+          timestamp: new Date().toISOString()
+        })
+      }).catch(err => console.error('Failed to forward manual decision to BYOS backend:', err));
+    }
 
     runsDB.set(run_id, run);
     eventsDB.set(run_id, events);
