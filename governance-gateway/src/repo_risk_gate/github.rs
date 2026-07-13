@@ -1,4 +1,4 @@
-use crate::repo_risk_gate::models::{GitHubRepoResponse, GitHubTreeResponse};
+use crate::repo_risk_gate::models::{GitHubRepoResponse, GitHubTreeResponse, GitHubBranchResponse};
 use reqwest::header::{HeaderMap, HeaderValue, USER_AGENT, AUTHORIZATION};
 use anyhow::{Result, Context};
 
@@ -41,6 +41,23 @@ impl GitHubClient {
         let meta = resp.json::<GitHubRepoResponse>().await
             .context("Failed to parse GitHub repository metadata response")?;
         Ok(meta)
+    }
+
+    pub async fn fetch_branch_commit(&self, owner: &str, repo: &str, branch: &str) -> Result<GitHubBranchResponse> {
+        let url = format!("https://api.github.com/repos/{}/{}/branches/{}", owner, repo, branch);
+        let resp = self.client.get(&url)
+            .headers(self.headers())
+            .send()
+            .await
+            .context("Failed to send request to GitHub Branch API")?;
+        
+        if !resp.status().is_success() {
+            return Err(anyhow::anyhow!("GitHub Branch API returned error: {}", resp.status()));
+        }
+
+        let data = resp.json::<GitHubBranchResponse>().await
+            .context("Failed to parse GitHub Branch response")?;
+        Ok(data)
     }
 
     pub async fn fetch_git_tree(&self, owner: &str, repo: &str, branch: &str) -> Result<GitHubTreeResponse> {

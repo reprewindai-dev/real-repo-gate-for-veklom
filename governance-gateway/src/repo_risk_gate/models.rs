@@ -19,6 +19,12 @@ pub struct RepoRiskGateRun {
     pub error_message: Option<String>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+    pub workspace_id: Uuid,
+    pub commit_sha: String,
+    pub tree_hash: String,
+    pub policy_version: String,
+    pub correlation_id: Option<String>,
+    pub pgl_evidence_id: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, sqlx::FromRow)]
@@ -34,6 +40,7 @@ pub struct RepoRiskGateEvent {
     pub metadata: Value,
     pub event_hash: Option<String>,
     pub created_at: DateTime<Utc>,
+    pub workspace_id: Uuid,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, sqlx::FromRow)]
@@ -46,6 +53,7 @@ pub struct RepoRiskGateFinding {
     pub risk_level: String,
     pub reason: String,
     pub created_at: DateTime<Utc>,
+    pub workspace_id: Uuid,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, sqlx::FromRow)]
@@ -55,6 +63,8 @@ pub struct RepoRiskGateDecision {
     pub decision: String,
     pub note: Option<String>,
     pub created_at: DateTime<Utc>,
+    pub workspace_id: Uuid,
+    pub cappo_auth_id: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -82,7 +92,19 @@ pub struct GitHubTreeEntry {
 }
 
 #[derive(Debug, Deserialize)]
+pub struct GitHubCommitObject {
+    pub sha: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct GitHubBranchResponse {
+    pub name: String,
+    pub commit: GitHubCommitObject,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct GitHubTreeResponse {
+    pub sha: String,
     pub tree: Vec<GitHubTreeEntry>,
     pub truncated: bool,
 }

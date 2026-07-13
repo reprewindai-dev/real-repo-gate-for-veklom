@@ -3,6 +3,9 @@ pub mod github;
 pub mod rules;
 pub mod ledger;
 pub mod store;
+pub mod pgl;
+pub mod cappo;
+pub mod amphoteric;
 
 use axum::{
     routing::{get, post},

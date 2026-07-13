@@ -4,8 +4,8 @@ use uuid::Uuid;
 
 pub async fn insert_run(pool: &PgPool, run: &RepoRiskGateRun) -> Result<()> {
     sqlx::query(
-        "INSERT INTO repo_risk_gate_runs (run_id, repo_url, repo_owner, repo_name, default_branch, agent_id, status, risk_level, tree_truncated, files_seen, ledger_hash, error_message, created_at, updated_at) \
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)"
+        "INSERT INTO repo_risk_gate_runs (run_id, repo_url, repo_owner, repo_name, default_branch, agent_id, status, risk_level, tree_truncated, files_seen, ledger_hash, error_message, created_at, updated_at, workspace_id, commit_sha, tree_hash, policy_version, correlation_id, pgl_evidence_id) \
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)"
     )
     .bind(run.run_id)
     .bind(&run.repo_url)
@@ -21,6 +21,12 @@ pub async fn insert_run(pool: &PgPool, run: &RepoRiskGateRun) -> Result<()> {
     .bind(&run.error_message)
     .bind(run.created_at)
     .bind(run.updated_at)
+    .bind(run.workspace_id)
+    .bind(&run.commit_sha)
+    .bind(&run.tree_hash)
+    .bind(&run.policy_version)
+    .bind(&run.correlation_id)
+    .bind(&run.pgl_evidence_id)
     .execute(pool)
     .await?;
 
@@ -68,8 +74,8 @@ pub async fn get_run(pool: &PgPool, run_id: Uuid) -> Result<Option<RepoRiskGateR
 
 pub async fn insert_event(pool: &PgPool, event: &RepoRiskGateEvent) -> Result<()> {
     sqlx::query(
-        "INSERT INTO repo_risk_gate_events (event_id, run_id, agent_id, sequence_no, event_type, target, policy_result, message, metadata, event_hash, created_at) \
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)"
+        "INSERT INTO repo_risk_gate_events (event_id, run_id, agent_id, sequence_no, event_type, target, policy_result, message, metadata, event_hash, created_at, workspace_id) \
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)"
     )
     .bind(event.event_id)
     .bind(event.run_id)
@@ -82,6 +88,7 @@ pub async fn insert_event(pool: &PgPool, event: &RepoRiskGateEvent) -> Result<()
     .bind(&event.metadata)
     .bind(&event.event_hash)
     .bind(event.created_at)
+    .bind(event.workspace_id)
     .execute(pool)
     .await?;
 
@@ -101,8 +108,8 @@ pub async fn get_events(pool: &PgPool, run_id: Uuid) -> Result<Vec<RepoRiskGateE
 
 pub async fn insert_finding(pool: &PgPool, finding: &RepoRiskGateFinding) -> Result<()> {
     sqlx::query(
-        "INSERT INTO repo_risk_gate_findings (finding_id, run_id, path, matched_rule, policy_result, risk_level, reason, created_at) \
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)"
+        "INSERT INTO repo_risk_gate_findings (finding_id, run_id, path, matched_rule, policy_result, risk_level, reason, created_at, workspace_id) \
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)"
     )
     .bind(finding.finding_id)
     .bind(finding.run_id)
@@ -112,6 +119,7 @@ pub async fn insert_finding(pool: &PgPool, finding: &RepoRiskGateFinding) -> Res
     .bind(&finding.risk_level)
     .bind(&finding.reason)
     .bind(finding.created_at)
+    .bind(finding.workspace_id)
     .execute(pool)
     .await?;
 
@@ -131,14 +139,16 @@ pub async fn get_findings(pool: &PgPool, run_id: Uuid) -> Result<Vec<RepoRiskGat
 
 pub async fn insert_decision(pool: &PgPool, decision: &RepoRiskGateDecision) -> Result<()> {
     sqlx::query(
-        "INSERT INTO repo_risk_gate_decisions (decision_id, run_id, decision, note, created_at) \
-         VALUES ($1, $2, $3, $4, $5)"
+        "INSERT INTO repo_risk_gate_decisions (decision_id, run_id, decision, note, created_at, workspace_id, cappo_auth_id) \
+         VALUES ($1, $2, $3, $4, $5, $6, $7)"
     )
     .bind(decision.decision_id)
     .bind(decision.run_id)
     .bind(&decision.decision)
     .bind(&decision.note)
     .bind(decision.created_at)
+    .bind(decision.workspace_id)
+    .bind(&decision.cappo_auth_id)
     .execute(pool)
     .await?;
 

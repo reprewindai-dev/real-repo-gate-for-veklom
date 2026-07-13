@@ -32,3 +32,16 @@ pub fn canonical_event_hash(events: Vec<Value>) -> anyhow::Result<String> {
 
     Ok(format!("{:x}", hasher.finalize()))
 }
+
+pub fn calculate_next_event_hash(previous_hash: Option<&str>, event: &Value) -> anyhow::Result<String> {
+    let stable = canonicalize(event.clone());
+    let payload = serde_json::to_string(&stable)?;
+
+    let mut hasher = Sha256::new();
+    if let Some(prev) = previous_hash {
+        hasher.update(prev.as_bytes());
+    }
+    hasher.update(payload.as_bytes());
+
+    Ok(format!("{:x}", hasher.finalize()))
+}
