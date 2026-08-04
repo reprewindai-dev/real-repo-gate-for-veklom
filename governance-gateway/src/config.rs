@@ -31,7 +31,7 @@ impl Config {
             gateway_port: env::var("GATEWAY_PORT")
                 .ok()
                 .and_then(|s| s.parse().ok())
-                .unwrap_or(3000),
+                .unwrap_or(3015),
             log_level: env::var("LOG_LEVEL").unwrap_or_else(|_| "info".to_string()),
             database_url: env::var("DATABASE_URL").expect("DATABASE_URL must be set"),
             github_token: env::var("GITHUB_TOKEN").ok(),
