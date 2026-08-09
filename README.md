@@ -1,3 +1,7 @@
+> [!IMPORTANT]
+> **VEKLOM BIBLE — READ FIRST:** [`00_VEKLOM_BIBLE.md`](./00_VEKLOM_BIBLE.md)
+> It supersedes older cross-repo architecture/deployment/alignment claims wherever they conflict.
+
 # Veklom Sovereign Governance Gateway (RepoGate)
 
 `reprewindai-dev/real-repo-gate-for-veklom` is the canonical RepoGate implementation for Veklom.
